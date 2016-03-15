@@ -20,28 +20,23 @@ public class Main {
                 main.sort(args[1]);
                 break;
             default:
-                System.out.println("Command not found. Available: write [filename] [itemCnt], read [filename], sort [filename]");
+                 System.out.println("Command not found. Available: write [filename] [itemCnt], read [filename], sort [filename]");
         }
     }
 
     private void sort(String file) {
-        ArrayListDAO list = new ArrayListDAO(file);
-//        for (ArrayListDAO.Node node : list) {
-//            System.out.println(node.getPrev() + " " + node.getValue() + " " + node.getNext());
-//        }
-
-
+        ArrayDAO list = new ArrayDAO(file);
         int n = list.size();
         boolean swapped;
         int last = 0;
         do {
             swapped = false;
             for(int i = 0; i < n - 1; i++){
-                ArrayListDAO.Node node = list.get(i);
-                ArrayListDAO.Node node1 = list.get(i + 1);
-                if(Double.compare(node.getValue(), node1.getValue()) > 0){
-                    list.set(i, node1);
-                    list.set(i + 1, node);
+                double first = list.get(i);
+                double second = list.get(i + 1);
+                if(Double.compare(first, second) > 0){
+                    list.set(i, second);
+                    list.set(i + 1, first);
                     swapped = true;
                     last = i;
                 }
@@ -49,9 +44,8 @@ public class Main {
             System.out.print("\rsorted: " + (n - last) + "/" + n);
         } while (swapped);
         System.out.println("");
-        for (int i = 0; i < list.size(); i++) {
-            ArrayListDAO.Node node = list.get(i);
-            System.out.println(node.getPrev() + " " + node.getValue() + " " + node.getNext());
+        for (Double value : list) {
+            System.out.println(value);
         }
         list.close();
 
@@ -69,7 +63,7 @@ public class Main {
                 buffer.putInt(0, i - 1);
                 buffer.putDouble(4, random.nextDouble() * 5000);
                 buffer.putInt(12, i + 1 >= count ? -1 : i + 1);
-                outputStream.write(buffer.array());//, (16 * i) + 4, 16
+                outputStream.write(buffer.array());
             }
             outputStream.close();
             fileOutputStream.close();
