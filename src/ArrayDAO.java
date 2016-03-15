@@ -1,21 +1,15 @@
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.ByteBuffer;
 import java.util.Iterator;
 
-public class ArrayDAO implements Iterable<Double> {
+public class ArrayDAO extends BaseDAO implements Iterable<Double> {
 
-    RandomAccessFile randomAccessFile;
-    ByteBuffer buffer;
+    public ArrayDAO(String filename) {
+        super(filename);
+    }
 
-    public ArrayDAO(String fileName) {
-        try {
-            randomAccessFile = new RandomAccessFile(fileName, "rws");
-            buffer = ByteBuffer.allocate(16);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+    @Override
+    protected int bufferSize() {
+        return 16;
     }
 
     public Double get(int index) {
@@ -103,46 +97,6 @@ public class ArrayDAO implements Iterable<Double> {
     @Override
     public Iterator<Double> iterator() {
         return new ArrayDAOIterator();
-    }
-
-    public class Node {
-        private int prev;
-        private int next;
-        private double value;
-
-        public Node() {
-            this(-1, 0.0, -1);
-        }
-
-        public Node(int prev, double value, int next) {
-            this.prev = prev;
-            this.next = next;
-            this.value = value;
-        }
-
-        public int getNext() {
-            return next;
-        }
-
-        public int getPrev() {
-            return prev;
-        }
-
-        public double getValue() {
-            return value;
-        }
-
-        public void setNext(int next) {
-            this.next = next;
-        }
-
-        public void setPrev(int prev) {
-            this.prev = prev;
-        }
-
-        public void setValue(double value) {
-            this.value = value;
-        }
     }
 
     public class ArrayDAOIterator implements Iterator<Double> {

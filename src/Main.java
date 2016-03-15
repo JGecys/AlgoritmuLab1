@@ -4,10 +4,12 @@ import java.util.Random;
 
 public class Main {
 
+    public static final String COMMANDS = "write [filename] [itemCnt], read [filename], sort [filename]";
+
     public static void main(String[] args) {
         Main main = new Main();
         if (args.length == 0) {
-            System.out.println("This program requires params: write, read, sort");
+            System.out.println("Available commands: " + COMMANDS);
         }
         switch (args[0]) {
             case "write":
@@ -20,7 +22,7 @@ public class Main {
                 main.sort(args[1]);
                 break;
             default:
-                 System.out.println("Command not found. Available: write [filename] [itemCnt], read [filename], sort [filename]");
+                System.out.println("Command not found. Available: " + COMMANDS);
         }
     }
 
@@ -31,10 +33,10 @@ public class Main {
         int last = 0;
         do {
             swapped = false;
-            for(int i = 0; i < n - 1; i++){
+            for (int i = 0; i < n - 1; i++) {
                 double first = list.get(i);
                 double second = list.get(i + 1);
-                if(Double.compare(first, second) > 0){
+                if (Double.compare(first, second) > 0) {
                     list.set(i, second);
                     list.set(i + 1, first);
                     swapped = true;
