@@ -1,22 +1,24 @@
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 
 public abstract class BaseDAO {
 
     protected RandomAccessFile randomAccessFile;
-    protected ByteBuffer buffer;
 
-    public BaseDAO(String filename) {
-        try {
-            randomAccessFile = new RandomAccessFile(filename, "rws");
-            buffer = ByteBuffer.allocate(bufferSize());
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+    public BaseDAO(String filename) throws FileNotFoundException {
+        randomAccessFile = new RandomAccessFile(filename, "rws");
     }
 
-    protected abstract int bufferSize();
+    public int size() throws IOException {
+        return (int) ((randomAccessFile.length() - 4) / 16);
+    }
+
+    public boolean close() throws IOException {
+        randomAccessFile.close();
+        return true;
+    }
 
     public class Node {
         private int prev;

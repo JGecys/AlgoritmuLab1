@@ -6,7 +6,7 @@ public class Main {
 
     public static final String COMMANDS = "write [filename] [itemCnt], read [filename], sort [filename]";
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         Main main = new Main();
         if (args.length == 0) {
             System.out.println("Available commands: " + COMMANDS);
@@ -26,7 +26,7 @@ public class Main {
         }
     }
 
-    private void sort(String file) {
+    private void sort(String file) throws IOException {
         ArrayDAO list = new ArrayDAO(file);
         int n = list.size();
         boolean swapped;
