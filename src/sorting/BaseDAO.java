@@ -14,6 +14,9 @@ public abstract class BaseDAO {
     }
 
     public int size() throws IOException {
+        if(randomAccessFile.length() == 0){
+            return 0;
+        }
         return (int) ((randomAccessFile.length() - 4) / 16);
     }
 
@@ -23,6 +26,7 @@ public abstract class BaseDAO {
     }
 
     public class Node {
+        private int position;
         private int prev;
         private int next;
         private double value;
@@ -32,6 +36,13 @@ public abstract class BaseDAO {
         }
 
         public Node(int prev, double value, int next) {
+            this.prev = prev;
+            this.next = next;
+            this.value = value;
+        }
+
+        public Node(int position, int prev, double value, int next) {
+            this.position = position;
             this.prev = prev;
             this.next = next;
             this.value = value;
@@ -59,6 +70,19 @@ public abstract class BaseDAO {
 
         public void setValue(double value) {
             this.value = value;
+        }
+
+        public int getPosition() {
+            return position;
+        }
+
+        public void setPosition(int position) {
+            this.position = position;
+        }
+
+        @Override
+        public String toString() {
+            return prev + " " + value + " " + next;
         }
     }
 

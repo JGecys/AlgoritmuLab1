@@ -9,4 +9,14 @@ public class DeletedItem implements DataItem {
     public Integer getValue() {
         return null;
     }
+
+    @Override
+    public Integer getKey() {
+        return null;
+    }
+
+    @Override
+    public void setKey(Integer key) {
+
+    }
 }
