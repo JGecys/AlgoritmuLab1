@@ -7,6 +7,8 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
+import static java.lang.Double.compare;
+
 public class Main {
 
     public static final String COMMANDS = "write [filename] [itemCnt], read [filename], sort [filename], readlist [filename], sortlist [filename]";
@@ -39,48 +41,57 @@ public class Main {
 
     private void sortlist(String file) throws IOException {
         ListDAO list = new ListDAO(file);
-        boolean swapped;
-        int n = list.size();
-        do {
-            swapped = false;
-            BaseDAO.Node first = list.first();
-            for (int i = 0; i < n - 1; i++) {
-                BaseDAO.Node second = list.getNext(first);
-                if (second != null && Double.compare(first.getValue(), second.getValue()) > 0) {
-                    double tmp = first.getValue();
-                    first.setValue(second.getValue());
-                    second.setValue(tmp);
-                    swapped = true;
-                }
-                first = second;
-            }
-        } while (swapped);
+        long startTime = System.nanoTime();
+        boolean swapped;                                                    //1.
+        int n = list.size();                                                //2.
+        do {                                                                //
+            swapped = false;                                                //3.
+            BaseDAO.Node first = list.first();                              //4.
+            for (int i = 0; i < n - 1; i++) {                               //5.
+                BaseDAO.Node second = list.getNext(first);                  //6.
+                if (second != null                                          //
+                        && compare(first.getValue(), second.getValue()) > 0)//7.
+                {                                                           //
+                    double tmp = first.getValue();                          //8.
+                    first.setValue(second.getValue());                      //9.
+                    second.setValue(tmp);                                   //10.
+                    swapped = true;                                         //11.
+                }                                                           //
+                first = second;                                             //12.
+            }                                                               //
+        } while (swapped);                                                  //13.
+        long endTime = System.nanoTime();
+        long duration = (endTime - startTime);
         print(list);
+        println("Soreted in " + duration / 1_000_000f + "ms.");
         list.close();
     }
 
     private void sort(String file) throws IOException {
         ArrayDAO list = new ArrayDAO(file);
-        int n = list.size();
-        boolean swapped;
-        do {
-            swapped = false;
-            for (int i = 0; i < n - 1; i++) {
-                double first = list.get(i);
-                double second = list.get(i + 1);
-                if (Double.compare(first, second) > 0) {
-                    list.set(i, second);
-                    list.set(i + 1, first);
-                    swapped = true;
-                }
-            }
-        } while (swapped);
+        long startTime = System.nanoTime();
+        int n = list.size();                            //1.
+        boolean swapped;                                //2.
+        do {                                            //3.
+            swapped = false;                            //4.
+            for (int i = 0; i < n - 1; i++) {           //5.
+                double first = list.get(i);             //6.
+                double second = list.get(i + 1);        //7.
+                if (compare(first, second) > 0) {//8.
+                    list.set(i, second);                //9.
+                    list.set(i + 1, first);             //10.
+                    swapped = true;                     //11.
+                }                                       //12.
+            }                                           //13.
+        } while (swapped);                              //14.
+        long endTime = System.nanoTime();
+        long duration = (endTime - startTime);
         println("");
         for (Double value : list) {
             println(value);
         }
+        println("Soreted in " + duration / 1_000_000f + "ms.");
         list.close();
-
     }
 
     public void write(String outFile, int count) throws IOException {

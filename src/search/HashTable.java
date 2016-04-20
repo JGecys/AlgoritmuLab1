@@ -25,7 +25,7 @@ public class HashTable {
         if(key < 0){
             key *= -1;
         }
-        return key % (arraySize / 5);
+        return key % ((arraySize - (1  - arraySize % 2))/ 5);
     }
 
     public void insert(DataItem item) {
