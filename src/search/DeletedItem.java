@@ -2,11 +2,11 @@ package search;
 
 public class DeletedItem implements DataItem {
     @Override
-    public void setValue(Integer value) {
+    public void setValue(Object value) {
     }
 
     @Override
-    public Integer getValue() {
+    public Object getValue() {
         return null;
     }
 

@@ -11,16 +11,17 @@ public class ArrayDAO extends BaseDAO implements Iterable<Double> {
     }
 
     public Double get(int index) throws IOException {
-        randomAccessFile.seek(getPos(index));
+        seek(index);
         return randomAccessFile.readDouble();
     }
 
-    private int getPos(int index) {
-        return 16 * index + 8;
+    @Override
+    protected long getPos(int next) {
+        return super.getPos(next) + 4;
     }
 
     public void set(int index, Double node) throws IOException {
-        randomAccessFile.seek(getPos(index));
+        seek(index);
         randomAccessFile.writeDouble(node);
     }
 
@@ -63,5 +64,8 @@ public class ArrayDAO extends BaseDAO implements Iterable<Double> {
             return -1.0;
         }
     }
+
+
+
 
 }

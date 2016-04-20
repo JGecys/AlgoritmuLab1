@@ -9,12 +9,12 @@ import java.util.Set;
 
 public class Main {
 
-    public static final String COMMANDS = "write [filename] [itemCnt], read [filename], sort [filename]";
+    public static final String COMMANDS = "write [filename] [itemCnt], read [filename], sort [filename], readlist [filename], sortlist [filename]";
 
     public static void main(String[] args) throws IOException {
         Main main = new Main();
         if (args.length == 0) {
-            System.out.println("Available commands: " + COMMANDS);
+            println("Available commands: " + COMMANDS);
         }
         switch (args[0].toLowerCase()) {
             case "write":
@@ -33,25 +33,26 @@ public class Main {
                 main.sortlist(args[1]);
                 break;
             default:
-                System.out.println("Command not found. Available: " + COMMANDS);
+                println("Command not found. Available: " + COMMANDS);
         }
     }
 
     private void sortlist(String file) throws IOException {
         ListDAO list = new ListDAO(file);
         boolean swapped;
+        int n = list.size();
         do {
             swapped = false;
-            for (BaseDAO.Node node : list) {
-                BaseDAO.Node next = list.getNext(node);
-                if (next != null && Double.compare(node.getValue(), next.getValue()) > 0) {
-                    double tmp = node.getValue();
-                    node.setValue(next.getValue());
-                    next.setValue(tmp);
-                    list.set(node);
-                    list.set(next);
+            BaseDAO.Node first = list.first();
+            for (int i = 0; i < n - 1; i++) {
+                BaseDAO.Node second = list.getNext(first);
+                if (second != null && Double.compare(first.getValue(), second.getValue()) > 0) {
+                    double tmp = first.getValue();
+                    first.setValue(second.getValue());
+                    second.setValue(tmp);
                     swapped = true;
                 }
+                first = second;
             }
         } while (swapped);
         print(list);
@@ -62,7 +63,6 @@ public class Main {
         ArrayDAO list = new ArrayDAO(file);
         int n = list.size();
         boolean swapped;
-        int last = 0;
         do {
             swapped = false;
             for (int i = 0; i < n - 1; i++) {
@@ -72,14 +72,12 @@ public class Main {
                     list.set(i, second);
                     list.set(i + 1, first);
                     swapped = true;
-                    last = i;
                 }
             }
-            System.out.print("\rsorted: " + (n - last) + "/" + n);
         } while (swapped);
-        System.out.println("");
+        println("");
         for (Double value : list) {
-            System.out.println(value);
+            println(value);
         }
         list.close();
 
@@ -87,7 +85,7 @@ public class Main {
 
     public void write(String outFile, int count) throws IOException {
         Set<Integer> usedValues = new HashSet<>(count);
-        RandomAccessFile randomAccessFile = new RandomAccessFile(outFile, "rws");
+        RandomAccessFile randomAccessFile = new RandomAccessFile(outFile, "rw");
         randomAccessFile.setLength(getPos(count));
         Random random = new Random();
         int next = getNext(random, count, usedValues);
@@ -122,11 +120,11 @@ public class Main {
         BufferedInputStream inputStream = new BufferedInputStream(fileInputStream);
         ByteBuffer buffer = ByteBuffer.allocate(16);
         inputStream.read(buffer.array(), 0, 4);
-        System.out.println(buffer.getInt(0));
+        println(buffer.getInt(0));
         int i = 0;
         while (inputStream.available() > 0) {
             inputStream.read(buffer.array(), 0, 16);
-            System.out.println(i++ + ": " + buffer.getInt(0) + " " + buffer.getDouble(4) + " " + buffer.getInt(12));
+            println(i++ + ": " + buffer.getInt(0) + " " + buffer.getDouble(4) + " " + buffer.getInt(12));
         }
         inputStream.close();
         fileInputStream.close();
@@ -141,8 +139,16 @@ public class Main {
     private void print(ListDAO listDao) {
         int i = 0;
         for (BaseDAO.Node node : listDao) {
-            System.out.println(i++ + ": " + node.toString());
+            println(i++ + ": " + node.toString());
         }
+    }
+
+    private static void println(Object sequence) {
+        System.out.println(sequence);
+    }
+
+    private static void print(Object sequence) {
+        System.out.print(sequence);
     }
 
 }

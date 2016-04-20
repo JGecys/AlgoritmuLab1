@@ -10,11 +10,11 @@ public abstract class BaseDAO {
     protected RandomAccessFile randomAccessFile;
 
     public BaseDAO(String filename) throws FileNotFoundException {
-        randomAccessFile = new RandomAccessFile(filename, "rws");
+        randomAccessFile = new RandomAccessFile(filename, "rw");
     }
 
     public int size() throws IOException {
-        if(randomAccessFile.length() == 0){
+        if (randomAccessFile.length() == 0) {
             return 0;
         }
         return (int) ((randomAccessFile.length() - 4) / 16);
@@ -25,64 +25,89 @@ public abstract class BaseDAO {
         return true;
     }
 
+    protected long getPos(int next) {
+        return 4 + (16 * next);
+    }
+
+    protected void seek(int position) throws IOException {
+        long pos = getPos(position);
+        if (pos != randomAccessFile.getFilePointer()) {
+            randomAccessFile.seek(pos);
+        }
+    }
+
+    protected void seek(int position, int offset) throws IOException {
+        long pos = getPos(position) + offset;
+        if (pos != randomAccessFile.getFilePointer()) {
+            randomAccessFile.seek(pos);
+        }
+    }
+
     public class Node {
-        private int position;
-        private int prev;
-        private int next;
-        private double value;
 
-        public Node() {
-            this(-1, 0.0, -1);
-        }
+        private final int position;
+        private Integer prev = null;
+        private Double value = null;
+        private Integer next = null;
 
-        public Node(int prev, double value, int next) {
-            this.prev = prev;
-            this.next = next;
-            this.value = value;
-        }
-
-        public Node(int position, int prev, double value, int next) {
+        public Node(int position) {
             this.position = position;
-            this.prev = prev;
-            this.next = next;
-            this.value = value;
         }
 
-        public int getNext() {
+        public int getNext() throws IOException {
+            if(next == null){
+                seek(position, 12);
+                next = randomAccessFile.readInt();
+            }
             return next;
         }
 
-        public int getPrev() {
+        public int getPrev() throws IOException {
+            if(prev == null){
+                seek(position);
+                prev = randomAccessFile.readInt();
+            }
             return prev;
         }
 
-        public double getValue() {
+        public double getValue() throws IOException {
+            if(value == null){
+                seek(position, 4);
+                value = randomAccessFile.readDouble();
+            }
             return value;
         }
 
-        public void setNext(int next) {
+        public void setNext(int next) throws IOException {
             this.next = next;
+            seek(position, 12);
+            randomAccessFile.writeInt(next);
         }
 
-        public void setPrev(int prev) {
+        public void setPrev(int prev) throws IOException {
             this.prev = prev;
+            seek(position);
+            randomAccessFile.writeInt(prev);
         }
 
-        public void setValue(double value) {
+        public void setValue(double value) throws IOException {
             this.value = value;
+            seek(position, 4);
+            randomAccessFile.writeDouble(value);
         }
 
         public int getPosition() {
             return position;
         }
 
-        public void setPosition(int position) {
-            this.position = position;
-        }
-
         @Override
         public String toString() {
-            return prev + " " + value + " " + next;
+            try {
+                return Integer.toString(position) + ": " + getPrev() + " " + getValue() + " " + getNext();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return Integer.toString(position);
         }
     }
 

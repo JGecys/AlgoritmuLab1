@@ -1,6 +1,9 @@
 package search;
 
-public class HashTable<T> {
+import java.util.ArrayList;
+import java.util.List;
+
+public class HashTable {
     private DataItem[] hashArray;
     private int arraySize;
     private DeletedItem deleted = new DeletedItem();
@@ -11,29 +14,38 @@ public class HashTable<T> {
         hashArray = new DataItem[arraySize];
     }
 
-    public int hashFunc1(int key) {
+    private int hashFunc1(int key) {
+        if(key < 0){
+            key *= -1;
+        }
         return key % arraySize;
     }
 
-    public int hashFunc2(int key) {
-        return 5 - key % 5;
+    private int hashFunc2(int key) {
+        if(key < 0){
+            key *= -1;
+        }
+        return key % (arraySize / 5);
     }
 
-    public void insert(int key, DataItem item, int size) {
-
-        if (num_items == size){
+    public void insert(DataItem item) {
+        if (num_items == arraySize) {
             System.out.println(" Error. Table Full.");
             return;
-        }
-        else
+        } else
             num_items++;
 
-        int hashVal = hashFunc1(key);
-        int stepSize = hashFunc2(key);
+        int hashVal = hashFunc1(item.hashCode());
+        int stepSize = hashFunc2(item.hashCode());
+        int i = 0;
         while (hashArray[hashVal] != null &&
                 hashArray[hashVal] != deleted) {
             hashVal += stepSize;
             hashVal %= arraySize;
+            i++;
+            if( i % (arraySize / 5) == 0){
+                System.out.println("trying to insert " + item.getValue().toString());
+            }
         }
         hashArray[hashVal] = item;
     }
@@ -55,18 +67,34 @@ public class HashTable<T> {
         return null;
     }
 
-    public DataItem find(int key)
-    {
+    public DataItem find(int key) {
         int hashVal = hashFunc1(key);
         int stepSize = hashFunc2(key);
 
-        while (hashArray[hashVal] != null)
-        {
+        while (hashArray[hashVal] != null) {
             if (hashArray[hashVal].getKey() == key)
                 return hashArray[hashVal];
             hashVal += stepSize;
             hashVal %= arraySize;
         }
         return null;
+    }
+
+    public List<Student> find(String lastname) {
+        List<Student> list = new ArrayList<>();
+        int key = lastname.hashCode();
+        if (key < 0) {
+            key *= -1;
+        }
+        int hashVal = hashFunc1(key);
+        int stepSize = hashFunc2(key);
+        while (hashArray[hashVal] != null) {
+            if (hashArray[hashVal].getKey().equals(key)
+                    && ((Student) hashArray[hashVal].getValue()).getLastname().equals(lastname))
+                list.add(((Student) hashArray[hashVal].getValue()));
+            hashVal += stepSize;
+            hashVal %= arraySize;
+        }
+        return list;
     }
 }

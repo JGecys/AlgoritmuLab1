@@ -10,7 +10,7 @@ public class ListDAO extends BaseDAO implements Iterable<BaseDAO.Node> {
         super(filename);
     }
 
-    private Node first() throws IOException {
+    public Node first() throws IOException {
         randomAccessFile.seek(0);
         return get(randomAccessFile.readInt());
     }
@@ -19,23 +19,11 @@ public class ListDAO extends BaseDAO implements Iterable<BaseDAO.Node> {
         if (index == -1) {
             return null;
         }
-        randomAccessFile.seek(getPos(index));
-        return new Node(index, randomAccessFile.readInt(), randomAccessFile.readDouble(), randomAccessFile.readInt());
+        return new Node(index);
     }
 
     public Node getNext(Node node) throws IOException {
         return get(node.getNext());
-    }
-
-    private void set(int index, Node node) throws IOException {
-        randomAccessFile.seek(getPos(index));
-        randomAccessFile.writeInt(node.getPrev());
-        randomAccessFile.writeDouble(node.getValue());
-        randomAccessFile.writeInt(node.getNext());
-    }
-
-    public void set(Node node) throws IOException {
-        set(node.getPosition(), node);
     }
 
     @Override
@@ -50,7 +38,12 @@ public class ListDAO extends BaseDAO implements Iterable<BaseDAO.Node> {
 
         @Override
         public boolean hasNext() {
-            return current == null || current.getNext() != -1;
+            try {
+                return current == null || current.getNext() != -1;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return false;
         }
 
         @Override
@@ -65,10 +58,6 @@ public class ListDAO extends BaseDAO implements Iterable<BaseDAO.Node> {
             }
             return null;
         }
-    }
-
-    private long getPos(int next) {
-        return 4 + (16 * next);
     }
 
 }
