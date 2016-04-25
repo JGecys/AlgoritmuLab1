@@ -40,25 +40,20 @@ public class MainSearch {
     //endregion
 
     public static void main(String[] args) throws IOException {
-        List<Student> generate = generate(2_000_000);
+        List<Student> generate = generate(400_000);
 //        System.out.println(generate);
-        HashTable table = new HashTable(5_000_000);
+        HashTable table = new HashTable(2000001);
         System.out.println("Creating table");
         for (Student student : generate) {
             table.insert(new Item(student));
         }
-        String last;
-        System.out.println("Input lastname: ");
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in)); //because intellij
-        while (!(last = br.readLine()).equals("")) {
-            long startTime = System.nanoTime();
-            List<Student> found = table.find(last);
-            long endTime = System.nanoTime();
-            long duration = (endTime - startTime);
-            System.out.println(found);
-            System.out.println("Found in " + duration / 1_000_000f + "ms.");
-            System.out.println("Input lastname: ");
+        long startTime = System.nanoTime();
+        for (String lastname : LASTNAMES) {
+            List<Student> found = table.find(lastname);
         }
+        long endTime = System.nanoTime();
+        long duration = (endTime - startTime);
+        System.out.println("Executed in " + duration / 1_000_000f + "ms.");
     }
 
     public static List<Student> generate(int count) {
